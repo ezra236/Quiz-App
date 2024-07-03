@@ -2,8 +2,11 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <conio.h> // Required for _getch()
 
 using namespace std;
+
+string getHiddenPassword();
 
 class Ezra {
 private:
@@ -38,7 +41,7 @@ public:
                 attempts++;
                 if (attempts < 3) {
                     cout << "You have " << 3 - attempts << " attempts left.\nEnter the password again: ";
-                    cin >> pass;
+                    pass = getHiddenPassword();
                 } else {
                     cout << "Maximum attempts reached. Exiting." << endl;
                     exit(0);
@@ -105,7 +108,7 @@ public:
             break;
         case 2:
             if (lowerM == 'b') {
-                cout << "Answer is: Jupiter" << endl;
+                cout << "Answer is: Jupiter" << endl;                
                 score++;
             } else {
                 cout << "Incorrect!" << endl;
@@ -146,6 +149,24 @@ public:
     }
 };
 
+string getHiddenPassword() {
+    string password;
+    char ch;
+    while ((ch = _getch()) != '\r') { // Read until Enter is pressed
+        if (ch == '\b') { // Handle backspace
+            if (!password.empty()) {
+                cout << "\b \b"; // Move cursor back, erase character, move cursor back again
+                password.pop_back(); // Remove last character from the password
+            }
+        } else {
+            cout << '*'; // Print * instead of the actual character
+            password += ch; // Add character to the password
+        }
+    }
+    cout << endl; // New line after password entry
+    return password;
+}
+
 int main() {
     Ezra instance;
     int que;
@@ -154,35 +175,30 @@ int main() {
 
     cout << "Welcome to the Quiz App" << endl;
     cout << "Enter the password: " << endl;
-    cin >> password;
+    password = getHiddenPassword();
 
     if (!instance.validate(password)) {
-        return 0; // Exit if the password validation fails
+        return 0; 
     }
 
-    for (int j = 1; j <= 5; j++) {
-        cout << "Question " << j << ":" << endl;
-        instance.Quest(j);
+    David instance1("placeholder", 0); // Initialize with dummy values
+    
+    for (int u = 1; u <= 5; u++) {
+        cout << "Question " << u << ":" << endl;
+        instance.Quest(u);
+
+        instance1.i = u; // Set the question number in instance1
+
+        cout << "Enter your Answer (a, b, c, d): ";
+        cin >> an;
+        cin.ignore();
+
+        instance1.Answer(an);
         cout << "-------------------------------------------------------------------------------------------------------------------" << endl;
     }
-
-    cout << "Enter the question number you want to answer: ";
-    cin >> que;
-    cin.ignore();
-
-    instance.Quest(que);
-
-    David instance1("placeholder", que);
-
-    cout << "Enter your Answer (a, b, c, d): ";
-    cin >> an;
-    cin.ignore();
-
-    instance1.Answer(an);
 
     int finalScore = instance1.calculateScore();
     cout << "Your final score is: " << finalScore << " out of 5." << endl;
 
     return 0;
 }
-
