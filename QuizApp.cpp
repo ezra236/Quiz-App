@@ -1,23 +1,18 @@
-#include<iostream>
-#include<string>
-#include<cstring>
+#include <iostream>
+#include <string>
 #include <sstream>
 #include <algorithm>
 
 using namespace std;
 
-class Ezra
-{
+class Ezra {
 private:
     string adminpass = "123";
 
 public:
     int i;
 
-    Ezra()
-    {
-        i = 0;
-    }
+    Ezra() : i(0) {}
 
     bool isNumber(const string& str) const {
         std::istringstream iss(str);
@@ -30,20 +25,39 @@ public:
         return true;
     }
 
-    void Quest(int i)
-    {
-        string str = to_string(i);
-        if ((!isNumber(str)) && (i > 5)) 
-        {
-            std::cout << "The input is not a valid number." << std::endl;
+    bool validate(string& pass) {
+        int attempts = 0;
+        bool isCorrect = false;
+
+        while (attempts < 3) {
+            if (pass == adminpass) {
+                isCorrect = true;
+                break; // Exit the loop if the password is correct
+            } else {
+                cout << "Incorrect password!" << endl;
+                attempts++;
+                if (attempts < 3) {
+                    cout << "You have " << 3 - attempts << " attempts left.\nEnter the password again: ";
+                    cin >> pass;
+                } else {
+                    cout << "Maximum attempts reached. Exiting." << endl;
+                    exit(0);
+                }
+            }
         }
-        else 
-        {
+        return isCorrect;
+    }
+
+    void Quest(int i) {
+        string str = to_string(i);
+        if ((!isNumber(str)) || (i > 5) || (i < 1)) {
+            std::cout << "The input is not a valid number or out of range (1-5)." << std::endl;
+            exit(0);  // Exit the program if the input is invalid
+        } else {
             cout << "The Question:" << std::endl;
         }
 
-        switch (i)
-        {
+        switch (i) {
         case 1:
             cout << "What is the capital of France?\n a) London\n b) Berlin\n c) Paris\n d) Madrid" << endl;
             break;
@@ -64,87 +78,60 @@ public:
             break;
         }
     }
-
-    void validate(string& pass)
-    {
-        if (pass == adminpass)
-        {
-            cout << "NO ACCESS" << endl;
-        }
-    }
 };
 
-class David : public Ezra
-{
+class David : public Ezra {
 public:
     string m;
     int i;
-    int score=0;
+    int score = 0;
 
-    David(string answ, int num) : Ezra()
-    {
+    David(string answ, int num) : Ezra() {
         m = answ;
         i = num;
     }
 
-    void Answer(char m)
-    {
+    void Answer(char m) {
         char lowerM = tolower(m);
 
-        switch (i)
-        {
+        switch (i) {
         case 1:
-            if (lowerM == 'c')
-            {
+            if (lowerM == 'c') {
                 cout << "Answer is: Paris" << endl;
                 score++;
-            }
-            else
-            {
+            } else {
                 cout << "Incorrect!" << endl;
             }
             break;
         case 2:
-            if (lowerM == 'b')
-            {
+            if (lowerM == 'b') {
                 cout << "Answer is: Jupiter" << endl;
-                 score++;
-            }
-            else
-            {
+                score++;
+            } else {
                 cout << "Incorrect!" << endl;
             }
             break;
         case 3:
-            if (lowerM == 'a')
-            {
+            if (lowerM == 'a') {
                 cout << "Answer is: William Shakespeare" << endl;
-                 score++;
-            }
-            else
-            {
+                score++;
+            } else {
                 cout << "Incorrect!" << endl;
             }
             break;
         case 4:
-            if (lowerM == 'a')
-            {
+            if (lowerM == 'a') {
                 cout << "Answer is: Au" << endl;
-                 score++;
-            }
-            else
-            {
+                score++;
+            } else {
                 cout << "Incorrect!" << endl;
             }
             break;
         case 5:
-            if (lowerM == 'c')
-            {
+            if (lowerM == 'c') {
                 cout << "Answer is: Hydrogen" << endl;
-                 score++;
-            }
-            else
-            {
+                score++;
+            } else {
                 cout << "Incorrect!" << endl;
             }
             break;
@@ -153,22 +140,27 @@ public:
             break;
         }
     }
-    
-    int calculateScore()
-    {
+
+    int calculateScore() {
         return score;
     }
 };
 
-int main()
-{
+int main() {
     Ezra instance;
     int que;
     char an;
+    string password;
 
     cout << "Welcome to the Quiz App" << endl;
+    cout << "Enter the password: " << endl;
+    cin >> password;
 
-    for (int j = 1; j < 6; j++) {
+    if (!instance.validate(password)) {
+        return 0; // Exit if the password validation fails
+    }
+
+    for (int j = 1; j <= 5; j++) {
         cout << "Question " << j << ":" << endl;
         instance.Quest(j);
         cout << "-------------------------------------------------------------------------------------------------------------------" << endl;
@@ -176,20 +168,21 @@ int main()
 
     cout << "Enter the question number you want to answer: ";
     cin >> que;
-    cin.ignore(); 
+    cin.ignore();
 
     instance.Quest(que);
 
-    David instance1("placeholder", que); 
+    David instance1("placeholder", que);
 
     cout << "Enter your Answer (a, b, c, d): ";
     cin >> an;
-    cin.ignore(); 
+    cin.ignore();
 
     instance1.Answer(an);
-    
+
     int finalScore = instance1.calculateScore();
     cout << "Your final score is: " << finalScore << " out of 5." << endl;
 
     return 0;
 }
+
